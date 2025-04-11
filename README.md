@@ -16,7 +16,7 @@ Undeterred, we turned to OWASP ZAP to crawl the website and enumerate endpoints.
 ![image](https://github.com/user-attachments/assets/5315b9e2-289a-4e8d-b995-9f0f187522d5)
 
 
-Despite these discoveries, all of the sensitive endpoints, including /admin and /api/login, were guarded by authentication. Requests to these pages were met with HTTP 307 redirects or 401 Unauthorized responses. 
+Despite these discoveries, all of the sensitive endpoints, including /admin and /api/login, were guarded by authorization checks. As a result, requests to these pages were met with HTTP 307 redirects or 401 Unauthorized responses. 
 
   
 ![image](https://github.com/user-attachments/assets/b30cae0e-d8df-4e19-a972-c47a1959b440)
@@ -24,7 +24,7 @@ Despite these discoveries, all of the sensitive endpoints, including /admin and 
  
 # More Exploitation Attempts 
 
-We experimented with some different approaches on the front end, such as intercepting and modifying backend responses with burp suite, setting local variables in the console that the login api returned and stepping over the legitimate responses. However, these efforts did not yield any success in bypassing the authentication mechanisms. 
+We experimented with some different approaches on the front end, such as intercepting and modifying backend responses with burp suite, setting local variables in the console that the login api returned and stepping over the legitimate responses. However, these efforts did not yield any success in bypassing the authentication mechanisms in place. 
 
 At this stage, it became clear that a more sophisticated attack vector was required. 
 
@@ -37,7 +37,7 @@ Our breakthrough came when we observed that the version of Next.js in use was vu
 
 # Vulnerability Explanation: 
 
-This vulnerability, CVE-2025-29927, arises from a flaw in the Next.js middleware responsible for request authentication. When the middleware encountered requests with an unusual header setup, it mistakenly interpreted the request context as an infinite loop of internal subrequests. This misinterpretation led the middleware to bypass the usual authentication checks. 
+This vulnerability, CVE-2025-29927, arises from a flaw in the Next.js middleware responsible for request authorization. When the middleware encountered requests with an unusual header setup, it mistakenly interpreted the request context as an infinite loop of internal subrequests. This misinterpretation led the middleware to bypass the usual authorization checks. 
 
 
 
@@ -57,7 +57,7 @@ We confused the middleware into granting access to endpoints that were normally 
 
 # Pivoting to XXE 
 
-With authentication bypassed, our focus shifted to the /api/parse-xml endpoint. This endpoint accepted XML input from the client and leveraged the Node.js library libxmljs2 for XML processing. We see we get a reflected response back from the parser. 
+With authorization bypassed, our focus shifted to the /api/parse-xml endpoint. This endpoint accepted XML input from the client and leveraged the Node.js library libxmljs2 for XML processing. We see we get a reflected response back from the parser. 
 
 
  ![Screenshot 2025-04-11 161719](https://github.com/user-attachments/assets/efc84bd7-bd9e-4f57-8f62-5a51f84d19f8)
@@ -88,7 +88,7 @@ Our XML payload contained a custom DTD that defined an external entity pointing 
 
 
 # Conclusion:
-The Hackdonalds Intigriti CTF challenge demonstrated the critical importance of secure configuration for both middleware components and XML parsers. By exploiting CVE-2025-29927 to bypass authentication and leveraging an XXE vulnerability in a poorly secured XML parser, we achieved arbitrary file disclosure and ultimately retrieved the flag. This multi-step exploitation chain underscores the necessity of defense in depth. Properly configuring XML parsers and robustly validating HTTP headers can help prevent such vulnerabilities from being exploited in production environments. 
+The Hackdonalds Intigriti CTF challenge demonstrated the critical importance of secure configuration for both middleware components and XML parsers. By exploiting CVE-2025-29927 to bypass authorization and leveraging an XXE vulnerability in a poorly secured XML parser, we achieved arbitrary file disclosure and ultimately retrieved the flag. This multi-step exploitation chain underscores the necessity of defense in depth. Properly configuring XML parsers and robustly validating HTTP headers can help prevent such vulnerabilities from being exploited in production environments. 
 
 # References:
 https://threatprotect.qualys.com/2025/03/25/next-js-middleware-authorization-bypass-vulnerability-cve-2025-29927/
