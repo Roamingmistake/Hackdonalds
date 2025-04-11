@@ -80,10 +80,10 @@ Now all that’s left is to find the flag. We used ffuf and a recursive approach
 
 # Our Final Payload: 
 
-We crafted an XML payload containing a custom DTD that defined an external entity pointing to a file on the server.  
-Sending this payload to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. 
+Our XML payload contained a custom DTD that defined an external entity pointing to a file on the server. Sending this payload to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. INTIGRITI{XXE_1n_Ic3Cr34m_M4ch1n3s}
 
 ![Screenshot 2025-04-11 162040](https://github.com/user-attachments/assets/f086ffd9-dc77-49d4-9322-c4a0b393ff63)
+
 
 # Conclusion:
 The Hackdonalds Intigriti CTF challenge demonstrated the critical importance of secure configuration for both middleware components and XML parsers. By exploiting CVE-2025-29927 to bypass authentication and leveraging an XXE vulnerability in a poorly secured XML parser, we achieved arbitrary file disclosure and ultimately retrieved the flag. This multi-step exploitation chain underscores the necessity of defense in depth. Properly configuring XML parsers and robustly validating HTTP headers can help prevent such vulnerabilities from being exploited in production environments. 
