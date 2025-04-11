@@ -9,7 +9,7 @@ At the start of the challenge, we are presented with a simple admin login page r
 
 Our initial approach was to employ cewl to scrape hackdonalds and other McDonald’s-themed websites for potential “Secret Sauce passwords”. We used hashcat to generate mutations, and then used the generated list to brute-force the login. We tried using typical sql injection payloads, null bytes, escape sequences, and malformed requests as well. However, this initial phase failed to produce any viable credentials or results.  
 
-# Recon Phase
+# We're Gonna Need More Recon
 Undeterred, we turned to OWASP ZAP to crawl the website and enumerate endpoints. The scan revealed several interesting endpoints in the buildManifest.json file, including: /admin, /ice-cream-machines, /ice-cream-details and the .js chunk files that serve those pages. Most notably, an endpoint at /api/parse-xml – more on that later. 
 
 ![image](https://github.com/user-attachments/assets/f6e4db69-9165-4288-b68e-3d24af914b26)
