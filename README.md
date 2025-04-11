@@ -80,7 +80,7 @@ Now all that’s left is to find the flag. We used ffuf and a recursive approach
 
 # Our Final Payload: 
 
-Our XML payload contained a custom DTD that defined an external entity pointing to a file on the server. Sending this payload to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. INTIGRITI{XXE_1n_Ic3Cr34m_M4ch1n3s}
+Our XML payload contained a custom DTD that defined an external entity pointing to the right file on the server. Sending the payload we found to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. INTIGRITI{XXE_1n_Ic3Cr34m_M4ch1n3s}
 
 ![Screenshot 2025-04-11 162040](https://github.com/user-attachments/assets/f086ffd9-dc77-49d4-9322-c4a0b393ff63)
 
