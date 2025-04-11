@@ -95,20 +95,6 @@ We crafted an XML payload containing a custom DTD that defined an external entit
 Sending this payload to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. 
 
 ![Screenshot 2025-04-11 162040](https://github.com/user-attachments/assets/f086ffd9-dc77-49d4-9322-c4a0b393ff63)
-  
-
-Summary of Exploitation Chain 
-
-Enumeration and Discovery: 
-We began with reconnaissance using ZAP, which unearthed hidden endpoints and JavaScript chunks. 
-The admin and XML parsing endpoints appeared to be behind authentication. 
-
-Middleware Bypass via CVE-2025-29927 
-The exploitation of the Next.js middleware vulnerability by injecting the header 
-XXE Injection
-With access to the /api/parse-xml endpoint, we performed an XXE injection using a crafted XML payload. 
-The payload leveraged the default behavior of libxmljs2 to resolve external entities, allowing arbitrary file disclosure. 
-After numerous attempts and fuzzing for likely file paths in a Kubernetes environment, the payload reading /app/package.json finally disclosed the flag. 
 
 Conclusion:
 The Hackdonalds Intigriti CTF challenge demonstrated the critical importance of secure configuration for both middleware components and XML parsers. By exploiting CVE-2025-29927 to bypass authentication and leveraging an XXE vulnerability in a poorly secured XML parser, we achieved arbitrary file disclosure and ultimately retrieved the flag. This multi-step exploitation chain underscores the necessity of defense in depth. Properly configuring XML parsers and robustly validating HTTP headers can help prevent such vulnerabilities from being exploited in production environments. 
