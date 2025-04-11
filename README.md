@@ -9,7 +9,7 @@ At the start of the challenge, we are presented with a simple admin login page r
 
 Our initial approach was to employ cewl to scrape hackdonalds and other McDonald’s-themed websites for potential “Secret Sauce passwords”. We used hashcat to generate mutations, and then used the generated list to brute-force the login. We tried using typical sql injection payloads, null bytes, escape sequences, and malformed requests. However, this initial phase failed to produce any viable credentials or results.  
 
-
+# Recon Phase
 Undeterred, we turned to OWASP ZAP to crawl the website and enumerate endpoints. The scan revealed several interesting endpoints in the buildManifest.json file, including: /admin, /ice-cream-machines, /ice-cream-details and the .js chunk files that serve those pages. Most notably, an endpoint at /api/parse-xml – more on that later. 
 
 ![image](https://github.com/user-attachments/assets/f6e4db69-9165-4288-b68e-3d24af914b26)
@@ -36,7 +36,7 @@ The Middleware Authorization Bypass (CVE-2025-29927)
 
 Our breakthrough came when we observed that the version of Next.js in use was vulnerable. Although the CVEs listed for Next.js in ZAP were solely denial-of-service exploits, further research (some google fu) led us to uncover a critical middleware vulnerability, CVE-2025-29927. 
 
-Vulnerability Explanation: 
+# Vulnerability Explanation: 
 
 This vulnerability arises from a flaw in the Next.js middleware responsible for request authentication. When the middleware encountered requests with an unusual header setup, it mistakenly interpreted the request context as an infinite loop of internal subrequests. This misinterpretation led the middleware to bypass the usual authentication checks. 
 
@@ -45,8 +45,7 @@ This vulnerability arises from a flaw in the Next.js middleware responsible for 
 ![Screenshot 2025-04-11 161532](https://github.com/user-attachments/assets/13f746e8-e0f2-4786-8e23-2e1e856dd55c)
 
 
-Exploitation: 
-
+# Exploitation: 
 By injecting the specially crafted header: 
 X-Middleware-Subrequest: middleware:middleware:middleware:middleware:middleware 
 
