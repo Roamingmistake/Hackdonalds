@@ -2,15 +2,12 @@
 
 Intigriti CTF Challenge 2025 CTF Writeup
 
-
-Introduction 
-
-In the 2025 Hackdonalds Intigriti CTF challenge, we encountered a seemingly simple admin login page requiring only a password.  
+At the start of the challenge, we are presented with a simple admin login page requiring only a password.  
 
  ![image](https://github.com/user-attachments/assets/f9f29de0-22b8-46e8-bcab-7c8dcd8d076c)
 
 
-Our initial approach was to employ tools like cewl to scrape McDonald’s-themed websites for potential “Secret Sauce passwords” and then brute-force the login. However, this initial phase failed to produce any viable credentials.  
+Our initial approach was to employ cewl to scrape hackdonalds and other McDonald’s-themed websites for potential “Secret Sauce passwords”. We used hashcat to generate mutations, and then attempted to brute-force the login. However, this initial phase failed to produce any viable credentials.  
 
 
 Reconnaissance and Endpoint Discovery 
