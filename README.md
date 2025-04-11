@@ -1,6 +1,6 @@
 # Hackdonalds
 
-Intigriti CTF Challenge 2025 CTF Writeup
+2025 Intigriti CTF Challenge Writeup
 
 At the start of the challenge, we are presented with a simple admin login page requiring only a password.  
 
