@@ -33,11 +33,11 @@ At this stage, it became clear that a more sophisticated attack vector was requi
 # Where there's smoke - there's fire
 The Middleware Authorization Bypass (CVE-2025-29927) 
 
-Our breakthrough came when we observed that the version of Next.js in use was vulnerable. Although the CVEs listed for Next.js in ZAP were solely denial-of-service exploits, further research (some google-fu) led us to uncover a critical middleware vulnerability, CVE-2025-29927. 
+Our breakthrough came when we observed that the version of Next.js in use was vulnerable. Although the CVEs listed for Next.js in ZAP were solely denial-of-service exploits, further research (some google-fu) led us to uncover a critical middleware vulnerability. 
 
 # Vulnerability Explanation: 
 
-This vulnerability arises from a flaw in the Next.js middleware responsible for request authentication. When the middleware encountered requests with an unusual header setup, it mistakenly interpreted the request context as an infinite loop of internal subrequests. This misinterpretation led the middleware to bypass the usual authentication checks. 
+This vulnerability, CVE-2025-29927, arises from a flaw in the Next.js middleware responsible for request authentication. When the middleware encountered requests with an unusual header setup, it mistakenly interpreted the request context as an infinite loop of internal subrequests. This misinterpretation led the middleware to bypass the usual authentication checks. 
 
 
 
@@ -71,7 +71,7 @@ An XML document can include a Document Type Definition (DTD) that defines extern
 
   
 
-Now all that’s left is to find the flag. We used ffuf and a recursive approach to find the flag file after multiple failed attempts. 
+After trying multiple file locations typical to CTF's and failing - We used ffuf with a recursive approach to find the flag. 
 
  
 ![Screenshot 2025-04-11 161851](https://github.com/user-attachments/assets/ff22a964-dda3-4035-ab31-82c6ccb764b7)
@@ -80,7 +80,9 @@ Now all that’s left is to find the flag. We used ffuf and a recursive approach
 
 # Our Final Payload: 
 
-Our XML payload contained a custom DTD that defined an external entity pointing to the right file on the server. Sending the payload we found to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. INTIGRITI{XXE_1n_Ic3Cr34m_M4ch1n3s}
+Our XML payload contained a custom DTD that defined an external entity pointing to the right file on the server. Sending the payload we found to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag.
+
+🚩🚩🚩INTIGRITI{XXE_1n_Ic3Cr34m_M4ch1n3s} 🚩🚩🚩
 
 ![Screenshot 2025-04-11 162040](https://github.com/user-attachments/assets/f086ffd9-dc77-49d4-9322-c4a0b393ff63)
 
