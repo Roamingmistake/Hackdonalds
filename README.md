@@ -22,8 +22,7 @@ Despite these discoveries, all of the sensitive endpoints, including /admin and 
 ![image](https://github.com/user-attachments/assets/b30cae0e-d8df-4e19-a972-c47a1959b440)
 
  
-
-Initial Exploitation Attempts 
+# More Exploitation Attempts 
 
 We experimented with some different approaches on the front end, such as intercepting and modifying backend responses with burp suite, setting local variables in the console that the login api returned and stepping over the legitimate responses. However, these efforts did not yield any success in bypassing the authentication mechanisms. 
 
@@ -31,10 +30,10 @@ At this stage, it became clear that a more sophisticated attack vector was requi
 
 ![image](https://github.com/user-attachments/assets/578057f9-353c-41ba-a3e4-00b6fe3cfd76)
   
-
+# Where there's smoke - there's fire
 The Middleware Authorization Bypass (CVE-2025-29927) 
 
-Our breakthrough came when we observed that the version of Next.js in use was vulnerable. Although the CVEs listed for Next.js in ZAP were solely denial-of-service exploits, further research (some google fu) led us to uncover a critical middleware vulnerability, CVE-2025-29927. 
+Our breakthrough came when we observed that the version of Next.js in use was vulnerable. Although the CVEs listed for Next.js in ZAP were solely denial-of-service exploits, further research (some google-fu) led us to uncover a critical middleware vulnerability, CVE-2025-29927. 
 
 # Vulnerability Explanation: 
 
@@ -45,7 +44,7 @@ This vulnerability arises from a flaw in the Next.js middleware responsible for 
 ![Screenshot 2025-04-11 161532](https://github.com/user-attachments/assets/13f746e8-e0f2-4786-8e23-2e1e856dd55c)
 
 
-# Exploitation: 
+# Successful Exploitation: 
 By injecting the specially crafted header: 
 X-Middleware-Subrequest: middleware:middleware:middleware:middleware:middleware 
 
@@ -56,7 +55,7 @@ We confused the middleware into granting access to endpoints that were normally 
 
   
 
-# Exploiting the XXE Vulnerability 
+# Pivoting to XXE 
 
 With authentication bypassed, our focus shifted to the /api/parse-xml endpoint. This endpoint accepted XML input from the client and leveraged the Node.js library libxmljs2 for XML processing. We see we get a reflected response back from the parser. 
 
@@ -79,12 +78,12 @@ Now all that’s left is to find the flag. We used ffuf and a recursive approach
 
  
 
-Our Final Payload: 
+# Our Final Payload: 
 
 We crafted an XML payload containing a custom DTD that defined an external entity pointing to a file on the server.  
 Sending this payload to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. 
 
 ![Screenshot 2025-04-11 162040](https://github.com/user-attachments/assets/f086ffd9-dc77-49d4-9322-c4a0b393ff63)
 
-Conclusion:
+# Conclusion:
 The Hackdonalds Intigriti CTF challenge demonstrated the critical importance of secure configuration for both middleware components and XML parsers. By exploiting CVE-2025-29927 to bypass authentication and leveraging an XXE vulnerability in a poorly secured XML parser, we achieved arbitrary file disclosure and ultimately retrieved the flag. This multi-step exploitation chain underscores the necessity of defense in depth. Properly configuring XML parsers and robustly validating HTTP headers can help prevent such vulnerabilities from being exploited in production environments. 
