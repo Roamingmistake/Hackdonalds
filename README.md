@@ -7,16 +7,11 @@ At the start of the challenge, we are presented with a simple admin login page r
  ![image](https://github.com/user-attachments/assets/f9f29de0-22b8-46e8-bcab-7c8dcd8d076c)
 
 
-Our initial approach was to employ cewl to scrape hackdonalds and other McDonald’s-themed websites for potential “Secret Sauce passwords”. We used hashcat to generate mutations, and then attempted to brute-force the login. However, this initial phase failed to produce any viable credentials.  
+Our initial approach was to employ cewl to scrape hackdonalds and other McDonald’s-themed websites for potential “Secret Sauce passwords”. We used hashcat to generate mutations, and then attempted to brute-force the login. We attempted using typical sql injection payloads, null bytes, escape sequences, and malformed requests. However, this initial phase failed to produce any viable credentials or results.  
 
 
-Reconnaissance and Endpoint Discovery 
-
-Undeterred, we turned to OWASP ZAP to crawl the website and enumerate endpoints. The scan revealed several interesting endpoints in the buildManifest.json file, including: 
-
-/admin, /ice-cream-machines, /ice-cream-details and the .js chunk files that serve those pages.  
-
-Notably, an endpoint at /api/parse-xml – more on that later 
+On to Reconnaissance and Endpoint Discovery: 
+Undeterred, we turned to OWASP ZAP to crawl the website and enumerate endpoints. The scan revealed several interesting endpoints in the buildManifest.json file, including: /admin, /ice-cream-machines, /ice-cream-details and the .js chunk files that serve those pages. Most notably, an endpoint at /api/parse-xml – more on that later. 
 
 ![image](https://github.com/user-attachments/assets/f6e4db69-9165-4288-b68e-3d24af914b26)
 ![image](https://github.com/user-attachments/assets/5315b9e2-289a-4e8d-b995-9f0f187522d5)
