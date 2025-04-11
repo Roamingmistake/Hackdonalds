@@ -1,22 +1,17 @@
 # Hackdonalds
-CTF Writeup
-Hackdonalds Intigriti CTF Challenge 2025 – A simple writeup 
 
- 
+Intigriti CTF Challenge 2025 CTF Writeup
+
 
 Introduction 
 
 In the 2025 Hackdonalds Intigriti CTF challenge, we encountered a seemingly simple admin login page requiring only a password.  
 
- 
+ ![image](https://github.com/user-attachments/assets/f9f29de0-22b8-46e8-bcab-7c8dcd8d076c)
 
- 
-
- 
 
 Our initial approach was to employ tools like cewl to scrape McDonald’s-themed websites for potential “Secret Sauce passwords” and then brute-force the login. However, this initial phase failed to produce any viable credentials.  
 
- 
 
 Reconnaissance and Endpoint Discovery 
 
@@ -24,15 +19,16 @@ Undeterred, we turned to OWASP ZAP to crawl the website and enumerate endpoints.
 
 /admin, /ice-cream-machines, /ice-cream-details and the .js chunk files that serve those pages.  
 
-  
-
 Notably, an endpoint at /api/parse-xml – more on that later 
 
-   
+![image](https://github.com/user-attachments/assets/f6e4db69-9165-4288-b68e-3d24af914b26)
+![image](https://github.com/user-attachments/assets/5315b9e2-289a-4e8d-b995-9f0f187522d5)
+
 
 Despite these discoveries, all of the sensitive endpoints, including /admin and /api/login, were guarded by authentication. Requests to these pages were met with HTTP 307 redirects or 401 Unauthorized responses. 
 
   
+![image](https://github.com/user-attachments/assets/b30cae0e-d8df-4e19-a972-c47a1959b440)
 
  
 
@@ -40,27 +36,22 @@ Initial Exploitation Attempts
 
 We experimented with various approaches, such as intercepting and modifying frontend requests using tools like Burp Suite, attempting to trick the backend into treating requests differently. However, these efforts did not yield any success in bypassing the authentication mechanisms. 
 
-  
-
 At this stage, it became clear that a more sophisticated attack vector was required. 
 
+![image](https://github.com/user-attachments/assets/578057f9-353c-41ba-a3e4-00b6fe3cfd76)
   
-
- 
 
 The Middleware Authorization Bypass (CVE-2025-29927) 
 
 Our breakthrough came when we observed that the version of Next.js in use was vulnerable. Although the CVEs listed for Next.js in ZAP were solely denial-of-service exploits, further research (some google fu) led us to uncover a critical middleware vulnerability, CVE-2025-29927. 
 
- 
-
-Technical Details 
-
 Vulnerability Explanation: 
 
 This vulnerability arises from a flaw in the Next.js middleware responsible for request authentication. When the middleware encountered requests with an unusual header setup, it mistakenly interpreted the request context as an infinite loop of internal subrequests. This misinterpretation led the middleware to bypass the usual authentication checks. 
 
-  
+
+
+
 
 Exploitation: 
 
