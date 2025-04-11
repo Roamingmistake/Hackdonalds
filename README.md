@@ -51,21 +51,18 @@ This vulnerability arises from a flaw in the Next.js middleware responsible for 
 
 
 
+![Screenshot 2025-04-11 161532](https://github.com/user-attachments/assets/13f746e8-e0f2-4786-8e23-2e1e856dd55c)
 
 
 Exploitation: 
 
 By injecting the specially crafted header: 
-
 X-Middleware-Subrequest: middleware:middleware:middleware:middleware:middleware 
-
- 
-
- 
 
 We confused the middleware into granting access to endpoints that were normally protected. In our tests using Burp Suite, including this header transformed previous 307/401 responses into legitimate 200 OK responses for pages such as /admin and /api/parse-xml. 
 
   
+![Screenshot 2025-04-11 161646](https://github.com/user-attachments/assets/db4fa2aa-0d63-4dd1-a184-f8b70b63243b)
 
   
 
@@ -73,82 +70,45 @@ Exploiting the XXE Vulnerability
 
 With authentication bypassed, our focus shifted to the /api/parse-xml endpoint. This endpoint accepted XML input from the client and leveraged the Node.js library libxmljs2 for XML processing. We see we get a reflected response back from the parser. 
 
+
+ ![Screenshot 2025-04-11 161719](https://github.com/user-attachments/assets/efc84bd7-bd9e-4f57-8f62-5a51f84d19f8)
  
 
- 
-
- 
-
-Fortunately for us, libxmljs2 was not configured securely against XXE (XML External Entity) attacks. 
-
-  
-
-How XXE Works 
-
-XML Parsing with External Entities: 
-
+Fortunately for us, libxmljs2 was not configured securely against XXE (XML External Entity) attacks.For the unintiated - this is how XXE Works-
 An XML document can include a Document Type Definition (DTD) that defines external entities. If not properly disabled, the XML parser will resolve these entities by retrieving external resources – including arbitrary files on the server. We sent a classic xxe payload for arbitrary file read and boom! 
 
  
+![Screenshot 2025-04-11 161804](https://github.com/user-attachments/assets/816d32a5-e214-4fd4-aa2d-facb9326e80a)
 
   
 
 Now all that’s left is to find the flag. We used ffuf and a recursive approach to find the flag file after multiple failed attempts. 
 
  
+![Screenshot 2025-04-11 161851](https://github.com/user-attachments/assets/ff22a964-dda3-4035-ab31-82c6ccb764b7)
 
  
 
 Our Final Payload: 
 
 We crafted an XML payload containing a custom DTD that defined an external entity pointing to a file on the server.  
-
 Sending this payload to the /api/parse-xml endpoint allowed the vulnerable parser to resolve &flag; and return the contents of /app/package.json, which ultimately contained the flag. 
 
-   
+![Screenshot 2025-04-11 162040](https://github.com/user-attachments/assets/f086ffd9-dc77-49d4-9322-c4a0b393ff63)
+  
 
-Final Exploitation Chain 
+Summary of Exploitation Chain 
 
 Enumeration and Discovery: 
-
 We began with reconnaissance using ZAP, which unearthed hidden endpoints and JavaScript chunks. 
-
 The admin and XML parsing endpoints appeared to be behind authentication. 
 
 Middleware Bypass via CVE-2025-29927 
-
 The exploitation of the Next.js middleware vulnerability by injecting the header 
-
- XXE Injection 
-
-  
-
+XXE Injection
 With access to the /api/parse-xml endpoint, we performed an XXE injection using a crafted XML payload. 
-
-  
-
 The payload leveraged the default behavior of libxmljs2 to resolve external entities, allowing arbitrary file disclosure. 
-
-  
-
 After numerous attempts and fuzzing for likely file paths in a Kubernetes environment, the payload reading /app/package.json finally disclosed the flag. 
 
-  
-
-Conclusion 
-
-The Hackdonalds Intigriti CTF challenge demonstrated the critical importance of secure configuration for both middleware components and XML parsers. By exploiting CVE-2025-29927 to bypass authentication and leveraging an XXE vulnerability in a poorly secured XML parser, we achieved arbitrary file disclosure and ultimately retrieved the flag. 
-
-  
-
-Sources and References 
-
-Next.js Middleware Authorization Bypass: Qualys Threat Protection Blog 
-
-Common XXE Vulnerability Techniques and Mitigations: OWASP XXE Prevention Cheat Sheet 
-
-libxmljs2 GitHub Repository: libxmljs2 
-
-  
-
-This multi-step exploitation chain underscores the necessity of defense in depth. Properly configuring XML parsers and robustly validating HTTP headers can help prevent such vulnerabilities from being exploited in production environments. 
+Conclusion:
+The Hackdonalds Intigriti CTF challenge demonstrated the critical importance of secure configuration for both middleware components and XML parsers. By exploiting CVE-2025-29927 to bypass authentication and leveraging an XXE vulnerability in a poorly secured XML parser, we achieved arbitrary file disclosure and ultimately retrieved the flag. This multi-step exploitation chain underscores the necessity of defense in depth. Properly configuring XML parsers and robustly validating HTTP headers can help prevent such vulnerabilities from being exploited in production environments. 
