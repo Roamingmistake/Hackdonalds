@@ -49,14 +49,14 @@ This vulnerability arises from a flaw in the Next.js middleware responsible for 
 By injecting the specially crafted header: 
 X-Middleware-Subrequest: middleware:middleware:middleware:middleware:middleware 
 
-We confused the middleware into granting access to endpoints that were normally protected. In our tests using Burp Suite, including this header transformed previous 307/401 responses into legitimate 200 OK responses for pages such as /admin and /api/parse-xml. 
+We confused the middleware into granting access to endpoints that were normally protected. We were able to transform the previous 307/401 responses into legitimate 200 OK responses for protected pages by simply including this header. 
 
   
 ![Screenshot 2025-04-11 161646](https://github.com/user-attachments/assets/db4fa2aa-0d63-4dd1-a184-f8b70b63243b)
 
   
 
-Exploiting the XXE Vulnerability 
+# Exploiting the XXE Vulnerability 
 
 With authentication bypassed, our focus shifted to the /api/parse-xml endpoint. This endpoint accepted XML input from the client and leveraged the Node.js library libxmljs2 for XML processing. We see we get a reflected response back from the parser. 
 
