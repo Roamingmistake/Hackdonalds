@@ -25,7 +25,7 @@ Despite these discoveries, all of the sensitive endpoints, including /admin and 
 
 Initial Exploitation Attempts 
 
-We experimented with various approaches, such as intercepting and modifying frontend requests using tools like Burp Suite, attempting to trick the backend into treating requests differently. However, these efforts did not yield any success in bypassing the authentication mechanisms. 
+We experimented with some different approaches on the front end, such as intercepting and modifying backend responses with burp suite, setting local variables in the console that the login api returned and stepping over the legitimate responses. However, these efforts did not yield any success in bypassing the authentication mechanisms. 
 
 At this stage, it became clear that a more sophisticated attack vector was required. 
 
